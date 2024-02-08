@@ -1,7 +1,6 @@
 import * as dotenv from 'dotenv';
-import express, { Request, Response } from 'express';
 dotenv.config();
-import { generateEmployees } from './api';
+import { generateEmployees, buildHierarchy } from './api';
 import { promises as fsPromises } from 'fs';
 
 //Validate .env file; terminate process and show instructions if not detected
@@ -17,26 +16,47 @@ BAMBOO_COMPANY_DOMAIN={Your Company Domain}
   process.exit();
 }
 
-const app = express();
-const port = 3000;
+const main = async () => {
+  console.log(`API Key loaded from .env file\n`);
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('Your employee data will be located in ./finalData/employees.json');
-});
-
-app.listen(port, () => {
-  console.log(`StackOne Integrations app listening on port ${port}\nAPI Key loaded from .env file\n`);
-  
   console.log(`Fetching and building Employee data...`);
-  generateEmployees().then(employees => {
-    const employeesJson = JSON.stringify(employees, null, 2);
+  try {
+    const employees = await generateEmployees();
     const filePath = './finalData/employees.json';
-    fsPromises.writeFile(filePath, employeesJson).then(() => {
+
+    try {
+      await writeObjectToFile(employees, filePath);
       console.log(`Employee JSON file created at ----> ${filePath} <----\n`);
+    } catch (error) {
+      console.error(`Error writing JSON file: ${error}`);
+    };
+
+    console.log(`Building organization hierarchy...`);
+
+    try {
+      const hierarchy = buildHierarchy(employees);
+      const filePath = './finalData/hierarchy.json';
+
+      try {
+        await writeObjectToFile(hierarchy, filePath);
+        console.log(`Hierarchy JSON file created at ----> ${filePath} <----\n`);
+      } catch (error) {
+        console.error(`Error writing JSON file: ${error}`);
+      };
+
       console.log(`That's all! Goodbye for now, and take care :)\nJeran Norman\njerann@umich.edu\n`);
       process.exit();
-    }).catch((error) => {
-      console.error(`Error writing JSON file: ${error}`);
-    });
-  });
-});
+    } catch (error) {
+      console.error(`Failed to build Hierarchy data: ${error}`);
+    }
+  } catch (error) {
+    console.error(`Failed to build Employee data: ${error}`);
+  }
+};
+
+const writeObjectToFile = async (object: object, path: string) => {
+  const json = JSON.stringify(object, null, 2);
+  await fsPromises.writeFile(path, json);
+};
+
+main();

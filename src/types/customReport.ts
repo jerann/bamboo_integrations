@@ -1,6 +1,8 @@
+import CustomReportEmployee from './customReportEmployee';
+
 interface CustomReport {
     fields: string[],
-    employees: any[]
+    employees: CustomReportEmployee[]
 }
 
 export default CustomReport;

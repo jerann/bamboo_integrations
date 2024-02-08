@@ -1,6 +1,6 @@
 # StackOne Take Home Assignment - Integration
 
-This Node.js and TypeScript application fetches employee data from the BambooHR API and generates an "employees.json" file.
+This Node.js and TypeScript application fetches employee data from the BambooHR API and generates two JSON files; one of employee data, one representing organization hierarchy based on manager assignments.
 
 ## Prerequisites
 
@@ -38,9 +38,11 @@ Before running, make sure you have installed:
     npm start
     ```
 
-If everything is set up correctly, the application will fetch and build employee data using multiple APIs, generate the "employees.json" file, and terminate. 
+The application will then fetch and build employee data using multiple APIs, generate the "employees.json" and "hierarchy.json" files, and terminate. 
 
-The resulting file will be located at `./finalData/employees.json`.
+The resulting files will be located at `./finalData/employees.json` and `./finalData/hierarchy.json`.
+
+Please contact jerann@umich.edu if you have any issues building or running.
 
 ## Where to Look
 
@@ -52,8 +54,11 @@ This uses 3 BambooHR API endpoints to retrieve data:
 - [Get a list of fields](https://documentation.bamboohr.com/reference/metadata-get-a-list-of-fields)
 - [Request a custom report](https://documentation.bamboohr.com/reference/request-custom-report-1)
 
+A list of available employee fields are requested, and a pre-defined set of filters are applied to request a custom report employee report.
+
+The employee directory is also requested, and combined with the employee report to create the final employee data.
+
 ## Dependencies
 
 - [Axios](https://www.npmjs.com/package/axios)
 - [dotenv](https://www.npmjs.com/package/dotenv)
-- [express](https://www.npmjs.com/package/express)
